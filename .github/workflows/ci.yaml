@@ -1,0 +1,55 @@
+name: Deploy to DigitalOcean
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        type: string
+        required: true
+        description: Which tag you want to deploy? (e.g. 1.2.3)
+      environment:
+        type: choice
+        required: true
+        default: "dev"
+        description: To which environment you want to deploy?
+        options:
+          - dev
+          - prod
+
+env:
+  PROJECT_NAME: rso-project
+  REGISTRY_NAME: rso-registry
+
+jobs:
+  deploy:
+    name: Deploy to prod
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@main
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Build web service image
+        run: docker build -t registry.digitalocean.com/$REGISTRY_NAME/web:$(echo $GITHUB_SHA | head -c7) web
+
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login --expiry-seconds 1200
+
+      - name: Push image to DigitalOcean Container Registry
+        run: docker push registry.digitalocean.com/$REGISTRY_NAME/web:$(echo $GITHUB_SHA | head -c7)
+
+      - name: Update deployment file
+        run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|registry.digitalocean.com/$REGISTRY_NAME/web:'${TAG}'|' $GITHUB_WORKSPACE/k8s/deployment.yaml
+
+      - name: Save DigitalOcean kubeconfig with short-lived credentials
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 rso-k8s-cluster
+
+      - name: Deploy to DigitalOcean Kubernetes
+        run: kubectl apply -f $GITHUB_WORKSPACE/k8s/deployment.yaml
+
+      - name: Verify deployment
+        run: kubectl rollout status k8s/deployment
