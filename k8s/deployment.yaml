@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: extreme-weather-event-notifier
+  name: extreme-weather-event-notifier-deployment
   labels:
     app: extreme-weather-event-notifier
     tier: backend
@@ -21,12 +21,10 @@ spec:
     spec:
       containers:
         - name: web
-          image: registry.digitalocean.com/rso-registry/web
+          image: registry.digitalocean.com/rso-registry/web:test
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
-          # https://kubernetes.io/docs/concepts/policy/pod-security-policy/
-          # https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
@@ -34,5 +32,17 @@ spec:
             capabilities:
               drop:
                 - all
+          livenessProbe:
+            httpGet:
+              path: /health/liveness
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health/liveness
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 20
       imagePullSecrets:
         - name: rso-registry

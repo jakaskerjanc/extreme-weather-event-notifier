@@ -1,26 +1,26 @@
 ARG NODE_VERSION=20.16.0
 
-FROM node:${NODE_VERSION}-slim AS build
+FROM node:${NODE_VERSION}-alpine AS build
 
-WORKDIR /app
+WORKDIR /home/node/web
 
 COPY package.json package-lock.json ./
-
-RUN npm ci 
+RUN npm ci
 
 COPY . .
-
 RUN npm run build
 
-FROM node:${NODE_VERSION}-slim
+FROM node:${NODE_VERSION}-alpine
 
-WORKDIR /app
-
-COPY --from=build /app/.output ./
-
-ENV HOST=0.0.0.0 NODE_ENV=production
-ENV NODE_ENV=production
+RUN addgroup --gid 3000 --system somegroup \
+    && adduser  --uid 2000 --system --ingroup somegroup someuser
+USER 2000:3000
 
 EXPOSE 3000
 
-CMD ["node","/app/server/index.mjs"]
+RUN mkdir /home/someuser/web/
+WORKDIR /home/someuser/web
+
+COPY --from=build /home/node/web/.output ./.output
+
+CMD ["node",".output/server/index.mjs"]

@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: extreme-weather-event-notifier-letsencrypt-dev
+spec:
+  acme:
+    email: js0567@student.uni-lj.si
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: extreme-weather-event-notifier-letsencrypt-private-key
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
