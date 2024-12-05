@@ -1,9 +1,12 @@
 export default defineEventHandler(async (_event) => {
+  const clientId = 'test-client-id'
   try {
-    const response = await $fetch('http://notification-service:3000/api/register')
+    const response = await $fetch('http://notification:3000/api/register', {
+      method: 'POST',
+      body: JSON.stringify({ clientId }),
+    })
 
     console.log(response)
-
     return response
   }
   catch (error) {
