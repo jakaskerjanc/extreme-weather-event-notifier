@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: web
-          image: registry.digitalocean.com/rso-registry/web:test
+          image: registry.digitalocean.com/rso-registry/web
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
