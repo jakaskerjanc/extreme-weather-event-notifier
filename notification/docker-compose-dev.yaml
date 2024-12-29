@@ -2,9 +2,13 @@ services:
   notification:
     container_name: notification
     restart: always
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     ports:
       - '3001:3001'
+    volumes:
+      - ./src:/app/src
     networks:
       - mongo-network
     depends_on:

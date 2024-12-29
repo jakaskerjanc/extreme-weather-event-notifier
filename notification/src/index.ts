@@ -1,29 +1,5 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-
-const port = 3001
-const app = express()
-
-app.use(bodyParser.json())
-
-app.get('/', (req, res) => {
-  res.status(200).send('Hello World!')
-})
-
-app.get('/health/liveness', (_req, res) => {
-  res.status(200).send('I am alive!')
-})
-
-app.post('/api/register', (req, res) => {
-  console.log(req.body)
-  res.status(200).json('You sent: ' + JSON.stringify(req.body))
-})
-
-app.listen(port, () => {
-  console.log(`Server is listening at port ${port}`)
-})
-
-// Import the mongoose module
 import mongoose from 'mongoose'
 
 // Set `strictQuery: false` to globally opt into filtering by properties that aren't in the schema
@@ -31,38 +7,74 @@ import mongoose from 'mongoose'
 // See: https://mongoosejs.com/docs/migrating_to_6.html#strictquery-is-removed-and-replaced-by-strict
 mongoose.set('strictQuery', false)
 
-// Define the database URL to connect to.
-const mongoDB = 'mongodb://mongo:27017/test'
+const Schema = mongoose.Schema
 
-// Wait for database to connect, logging an error if there is a problem
+const notificationRegisterSchema = new Schema({
+  clientId: String,
+  isRegistered: Boolean,
+  createDate: Date
+})
+
+const NotificationRegister = mongoose.model('SomeModel', notificationRegisterSchema)
+
+const mongoDB = 'mongodb://mongo:27017/notification'
+
+const port = 3001
+const app = express()
+
+let isReady = false
+
+app.use(bodyParser.json())
+
+app.get('/healthz', (_req, res) => {
+  if (!isReady) {
+    res.status(500).send('Not ready')
+  } else {
+    res.status(200).send('I am alive!')
+  }
+})
+
+app.post('/api/register', async (req, res) => {
+  const { clientId, isRegistered } = req.body
+
+  if (typeof clientId !== 'string' || typeof isRegistered !== 'boolean') {
+    res.status(400).send('Invalid input')
+    return
+  }
+
+  const existing = await NotificationRegister.findOne({ clientId })
+
+  if (existing) {
+    await NotificationRegister.updateOne({ clientId }, { isRegistered })
+    res.status(200).json(`Updated ${clientId} notifications to ${isRegistered}`)
+    return
+  }
+
+  await NotificationRegister.create({ clientId, isRegistered, createDate: new Date() })
+  res.status(200).json(`Created ${clientId} with notifications ${isRegistered}`)
+})
+
+app.get('/api/status/:clientId', async (req, res) => {
+  const clientId = req.params.clientId
+
+  const result = await NotificationRegister.findOne({ clientId })
+
+  if (!result) {
+    res.status(404).send('Not found')
+    return
+  }
+
+  res.status(200).json({ clientId: result.clientId, isRegistered: result.isRegistered, createDate: result.createDate })
+})
+
+app.listen(port, () => {
+  console.log(`Server is listening at port ${port}`)
+})
+
 main().catch((err) => console.log(err))
 async function main() {
   console.log('Connecting to MongoDB...')
   await mongoose.connect(mongoDB)
-  console.log('Connected to MongoDB')
+  console.log('Connected to MongoDB!')
+  isReady = true
 }
-
-const Schema = mongoose.Schema
-
-const SomeModelSchema = new Schema({
-  name: String,
-  date: Date
-})
-
-const SomeModel = mongoose.model('SomeModel', SomeModelSchema)
-
-app.get('/db/testwrite/:name', async (req, res) => {
-  await SomeModel.create({ name: req.params.name, date: new Date() })
-
-  res.status(200).send('Created! (probably)')
-})
-
-app.get('/db/testread', async (_req, res) => {
-  try {
-    const results = await SomeModel.find({})
-    res.status(200).send(JSON.stringify(results))
-  } catch (error) {
-    console.error('Error fetching data:', error)
-    res.status(500).send('Error fetching data')
-  }
-})

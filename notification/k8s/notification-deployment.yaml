@@ -21,10 +21,7 @@ spec:
         io.kompose.service: notification
     spec:
       containers:
-        - env:
-            - name: MONGODB_URL
-              value: mongodb://mongodb:27017/test
-          image: registry.digitalocean.com/rso-registry/notification
+        - image: registry.digitalocean.com/rso-registry/notification
           name: notification
           ports:
             - containerPort: 3001

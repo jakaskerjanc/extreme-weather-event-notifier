@@ -24,14 +24,14 @@ spec:
     spec:
       containers:
         - image: mongo:8.0.4-rc0-noble
-          name: mongo
+          name: mongodb
           ports:
             - containerPort: 27017
               protocol: TCP
           volumeMounts:
             - mountPath: /data/db
               name: mongo-claim0
-      hostname: mongo
+      hostname: mongodb
       restartPolicy: Always
       volumes:
         - name: mongo-claim0
