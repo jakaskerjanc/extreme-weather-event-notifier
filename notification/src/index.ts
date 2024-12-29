@@ -60,7 +60,7 @@ app.get('/api/status/:clientId', async (req, res) => {
   const result = await NotificationRegister.findOne({ clientId })
 
   if (!result) {
-    res.status(404).send('Not found')
+    res.status(200).json({ clientId, isRegistered: false })
     return
   }
 
