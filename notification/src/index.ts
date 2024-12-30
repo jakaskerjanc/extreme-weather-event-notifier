@@ -15,7 +15,7 @@ const notificationRegisterSchema = new Schema({
   createDate: Date
 })
 
-const NotificationRegister = mongoose.model('SomeModel', notificationRegisterSchema)
+const NotificationRegister = mongoose.model('NotificationRegister', notificationRegisterSchema)
 
 const mongoDB = 'mongodb://mongo:27017/notification'
 

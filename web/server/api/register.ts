@@ -1,13 +1,14 @@
 export default defineEventHandler(async (event) => {
   const incomingBody = await readBody(event)
   const clientId = incomingBody?.clientId
+  const isRegistered = incomingBody?.isRegistered
 
-  const requestBody = JSON.stringify({ clientId, isRegistered: true })
+  const requestBody = JSON.stringify({ clientId, isRegistered })
 
   console.log(requestBody)
 
   try {
-    const response = await $fetch('http://localhost:3001/api/register', {
+    const response = await $fetch('http://notification:3001/api/register', {
       method: 'POST',
       body: requestBody,
     })

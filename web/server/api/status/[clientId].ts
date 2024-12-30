@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const response = await $fetch(`http://localhost:3001/api/status/${clientId}`, {
+    const response = await $fetch(`http://notification:3001/api/status/${clientId}`, {
       method: 'GET',
     })
 
