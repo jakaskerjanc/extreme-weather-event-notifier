@@ -3,10 +3,6 @@ name: Full deploy to DigitalOcean
 on:
   workflow_dispatch:
 
-env:
-  PROJECT_NAME: rso-project
-  REGISTRY_NAME: rso-registry
-
 jobs:
   deploy:
     name: Deploy to prod
@@ -20,32 +16,71 @@ jobs:
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-      - name: Build web service image
-        run: docker build -t registry.digitalocean.com/$REGISTRY_NAME/web:$(echo $GITHUB_SHA | head -c7) web
-
       - name: Log in to DigitalOcean Container Registry with short-lived credentials
         run: doctl registry login --expiry-seconds 1200
-
-      - name: Push image to DigitalOcean Container Registry
-        run: docker push registry.digitalocean.com/$REGISTRY_NAME/web:$(echo $GITHUB_SHA | head -c7)
-
-      - name: Update deployment file
-        run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|registry.digitalocean.com/rso-registry/web|registry.digitalocean.com/rso-registry/web:'${TAG}'|' $GITHUB_WORKSPACE/web/k8s/deployment.yaml
 
       - name: Save DigitalOcean kubeconfig with short-lived credentials
         run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 rso-k8s-cluster
 
-      - name: Apply Issuer to DigitalOcean Kubernetes
-        run: kubectl apply -f $GITHUB_WORKSPACE/k8s/production_issuer.yaml
+        ### Web service build and deploy
+      - name: Pull latest web service image
+        run: docker pull registry.digitalocean.com/rso-registry/web:latest
 
-      - name: Apply Ingress to DigitalOcean Kubernetes
-        run: kubectl apply -f $GITHUB_WORKSPACE/k8s/ingress.yaml
+      - name: Build web service image
+        run: docker build -t registry.digitalocean.com/rso-registry/web:$(echo $GITHUB_SHA | head -c7) web
+
+      - name: Tag web service image as latest
+        run: docker image tag registry.digitalocean.com/rso-registry/web:$(echo $GITHUB_SHA | head -c7) registry.digitalocean.com/rso-registry/web:latest
+
+      - name: Push web service images to DigitalOcean Container Registry
+        run: docker push registry.digitalocean.com/rso-registry/web --all-tags
+
+      - name: Update web deployment file
+        run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|registry.digitalocean.com/rso-registry/web|registry.digitalocean.com/rso-registry/web:'${TAG}'|' $GITHUB_WORKSPACE/web/k8s/deployment.yaml
 
       - name: Apply Web Deployment to DigitalOcean Kubernetes
         run: kubectl apply -f $GITHUB_WORKSPACE/web/k8s/deployment.yaml
 
       - name: Apply Web Service to DigitalOcean Kubernetes
         run: kubectl apply -f $GITHUB_WORKSPACE/web/k8s/service.yaml
+
+        ### Notification service build and deploy
+      - name: Pull latest Notification service image
+        run: docker pull registry.digitalocean.com/rso-registry/notification:latest
+
+      - name: Build Notification service image
+        run: docker build -t registry.digitalocean.com/rso-registry/notification:$(echo $GITHUB_SHA | head -c7) notification
+
+      - name: Tag Notification service image as latest
+        run: docker image tag registry.digitalocean.com/rso-registry/notification:$(echo $GITHUB_SHA | head -c7) registry.digitalocean.com/rso-registry/notification:latest
+
+      - name: Push Notification service images to DigitalOcean Container Registry
+        run: docker push registry.digitalocean.com/rso-registry/notification --all-tags
+
+      - name: Update Notification deployment file
+        run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|registry.digitalocean.com/rso-registry/notification|registry.digitalocean.com/rso-registry/notification:'${TAG}'|' $GITHUB_WORKSPACE/notification/k8s/notification-deployment.yaml
+
+      - name: Apply Notification Deployment to DigitalOcean Kubernetes
+        run: kubectl apply -f $GITHUB_WORKSPACE/notification/k8s/notification-deployment.yaml
+
+      - name: Apply Notification Service to DigitalOcean Kubernetes
+        run: kubectl apply -f $GITHUB_WORKSPACE/notification/k8s/notification-service.yaml
+
+      - name: Apply Notification-Mongo Deployment to DigitalOcean Kubernetes
+        run: kubectl apply -f $GITHUB_WORKSPACE/notification/k8s/mongo-deployment.yaml
+
+      - name: Apply Notification-Mongo Service to DigitalOcean Kubernetes
+        run: kubectl apply -f $GITHUB_WORKSPACE/notification/k8s/mongo-service.yaml
+
+      - name: Apply Notification-Mongo PVC to DigitalOcean Kubernetes
+        run: kubectl apply -f $GITHUB_WORKSPACE/notification/k8s/mongo-claim0-persistentvolumeclaim.yaml
+
+        ### Common deployment steps
+      - name: Apply Issuer to DigitalOcean Kubernetes
+        run: kubectl apply -f $GITHUB_WORKSPACE/k8s/production_issuer.yaml
+
+      - name: Apply Ingress to DigitalOcean Kubernetes
+        run: kubectl apply -f $GITHUB_WORKSPACE/k8s/ingress.yaml
 
       - name: Verify deployment
         run: kubectl rollout status deployment
