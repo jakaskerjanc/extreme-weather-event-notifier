@@ -21,6 +21,6 @@ spec:
         io.kompose.service: scraper
     spec:
       containers:
-        - image: registry.digitalocean.com/rso-registry/scraper:latest
+        - image: registry.digitalocean.com/rso-registry/scraper
           name: scraper
       restartPolicy: Always
