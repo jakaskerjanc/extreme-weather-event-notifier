@@ -1,0 +1,25 @@
+services:
+  scraper:
+    container_name: scraper
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./src:/app/src
+    networks:
+      - rabbitmq-network
+    depends_on:
+      - rabbitmq
+  rabbitmq:
+    container_name: rabbitmq
+    hostname: rabbitmq
+    image: rabbitmq:4.0-management
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    networks:
+      - rabbitmq-network
+networks:
+  rabbitmq-network:
+    driver: bridge

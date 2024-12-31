@@ -1,0 +1,25 @@
+services:
+  scraper:
+    container_name: scraper
+    restart: always
+    build: .
+    networks:
+      - scraper-network
+    depends_on:
+      - rabbitmq
+  rabbitmq:
+    container_name: rabbitmq
+    hostname: rabbitmq
+    image: rabbitmq:4.0-management
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    networks:
+      - rabbitmq-network
+      - scraper-network
+
+networks:
+  rabbitmq-network:
+    external: true
+  scraper-network:
+    driver: bridge
