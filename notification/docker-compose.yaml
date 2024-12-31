@@ -6,7 +6,8 @@ services:
     ports:
       - '3001:3001'
     networks:
-      - mongo-network
+      - notification-network
+      - rabbitmq-network
     depends_on:
       - mongo
   mongo:
@@ -18,7 +19,9 @@ services:
     ports:
       - '27017:27017'
     networks:
-      - mongo-network
+      - notification-network
 networks:
-  mongo-network:
+  notification-network:
     driver: bridge
+  rabbitmq-network:
+    external: true
