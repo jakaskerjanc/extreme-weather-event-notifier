@@ -75,6 +75,31 @@ jobs:
       - name: Apply Notification-Mongo PVC to DigitalOcean Kubernetes
         run: kubectl apply -f $GITHUB_WORKSPACE/notification/k8s/mongo-claim0-persistentvolumeclaim.yaml
 
+        ### Scraper service build and deploy
+      - name: Pull latest Scraper service image
+        run: docker pull registry.digitalocean.com/rso-registry/scraper:latest
+
+      - name: Build Scraper service image
+        run: docker build -t registry.digitalocean.com/rso-registry/scraper:$(echo $GITHUB_SHA | head -c7) scraper
+
+      - name: Tag Scraper service image as latest
+        run: docker image tag registry.digitalocean.com/rso-registry/scraper:$(echo $GITHUB_SHA | head -c7) registry.digitalocean.com/rso-registry/scraper:latest
+
+      - name: Push Scraper service images to DigitalOcean Container Registry
+        run: docker push registry.digitalocean.com/rso-registry/scraper --all-tags
+
+      - name: Update Scraper deployment file
+        run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|registry.digitalocean.com/rso-registry/scraper|registry.digitalocean.com/rso-registry/scraper:'${TAG}'|' $GITHUB_WORKSPACE/scraper/k8s/scraper-deployment.yaml
+
+      - name: Apply Scraper Deployment to DigitalOcean Kubernetes
+        run: kubectl apply -f $GITHUB_WORKSPACE/scraper/k8s/scraper-deployment.yaml
+
+      - name: Apply RabbitMQ Deployment to DigitalOcean Kubernetes
+        run: kubectl apply -f $GITHUB_WORKSPACE/scraper/k8s/rabbitmq-deployment.yaml
+
+      - name: Apply RabbitMQ Service to DigitalOcean Kubernetes
+        run: kubectl apply -f $GITHUB_WORKSPACE/scraper/k8s/rabbitmq-service.yaml
+
         ### Common deployment steps
       - name: Apply Issuer to DigitalOcean Kubernetes
         run: kubectl apply -f $GITHUB_WORKSPACE/k8s/production_issuer.yaml
