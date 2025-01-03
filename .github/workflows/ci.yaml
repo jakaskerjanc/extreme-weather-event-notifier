@@ -45,10 +45,10 @@ jobs:
         run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|registry.digitalocean.com/rso-registry/web|registry.digitalocean.com/rso-registry/web:'${TAG}'|' $GITHUB_WORKSPACE/web/k8s/deployment.yaml
 
       - name: Apply Web Deployment to DigitalOcean Kubernetes
-        run: kubectl apply -f $GITHUB_WORKSPACE/web/k8s/deployment.yaml
+        run: kubectl apply -f $GITHUB_WORKSPACE/web/k8s/web-deployment.yaml
 
       - name: Apply Web Service to DigitalOcean Kubernetes
-        run: kubectl apply -f $GITHUB_WORKSPACE/web/k8s/service.yaml
+        run: kubectl apply -f $GITHUB_WORKSPACE/web/k8s/web-service.yaml
 
         ### Notification service build and deploy
       - name: Pull latest Notification service image
