@@ -21,7 +21,7 @@ spec:
         io.kompose.service: storage
     spec:
       containers:
-        - image: storage
+        - image: registry.digitalocean.com/rso-registry/storage
           name: storage
           ports:
             - containerPort: 4000
