@@ -2,9 +2,15 @@ name: Full deploy to DigitalOcean
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    types: [closed]
 
 jobs:
   deploy:
+    # Only run on merged PRs
+    if: ${{ github.event.pull_request.merged }}
     name: Deploy to prod
     runs-on: ubuntu-latest
     steps:
