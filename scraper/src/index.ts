@@ -3,7 +3,7 @@ import type { ArsoSevereEvent } from './scraper'
 import { openChannel, sendMessage } from './rabbitmq'
 import express from 'express'
 
-const isReady = false
+let isReady = false
 
 async function main() {
   const { connection, channel } = await openChannel()
@@ -28,6 +28,8 @@ async function main() {
     connection.close()
     process.exit(0)
   })
+
+  isReady = true
 }
 
 main()
