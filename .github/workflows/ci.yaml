@@ -2,21 +2,9 @@ name: Full deploy to DigitalOcean
 
 on:
   workflow_dispatch:
-    inputs:
-      is_manual_dispatch:
-        description: 'Set true on workflow dispatch'
-        required: true
-        default: true
-        type: boolean
-  pull_request:
-    branches:
-      - main
-    types: [closed]
 
 jobs:
   deploy:
-    # Only run on merged PRs
-    if: ${{ github.event.pull_request.merged || github.event.inputs.manual_dispatch }}
     name: Deploy to prod
     runs-on: ubuntu-latest
     steps:
