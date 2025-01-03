@@ -126,7 +126,7 @@ jobs:
         run: kubectl apply -f $GITHUB_WORKSPACE/storage/k8s/storage-mongodb-service.yaml
 
       - name: Apply Storage Mongo PVC to DigitalOcean Kubernetes
-        run: kubectl apply -f $GITHUB_WORKSPACE/notification/k8s/storage-mongodb-claim0-persistentvolumeclaim.yaml
+        run: kubectl apply -f $GITHUB_WORKSPACE/storage/k8s/storage-mongodb-claim0-persistentvolumeclaim.yaml
 
       - name: Apply Storage Service to DigitalOcean Kubernetes
         run: kubectl apply -f $GITHUB_WORKSPACE/storage/k8s/storage-service.yaml
