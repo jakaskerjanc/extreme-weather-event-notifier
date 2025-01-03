@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - storage/**
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
   workflow_dispatch:
 
 defaults:

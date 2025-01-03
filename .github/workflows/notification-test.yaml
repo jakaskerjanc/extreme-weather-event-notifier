@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - notification/**
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
   workflow_dispatch:
 
 defaults:
