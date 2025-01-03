@@ -1,0 +1,32 @@
+services:
+  storage:
+    container_name: storage
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./src:/app/src
+    ports:
+      - '4000:4000'
+    networks:
+      - storage-network
+      - rabbitmq-network
+    depends_on:
+      - storage-mongodb
+  storage-mongodb:
+    container_name: storage-mongodb
+    hostname: storage-mongodb
+    image: mongo:8.0.4-rc0-noble
+    command: mongod --port 27018
+    ports:
+      - '27018:27018'
+    volumes:
+      - ./conduit:/data/db/
+    networks:
+      - storage-network
+networks:
+  storage-network:
+    external: true
+  rabbitmq-network:
+    external: true

@@ -100,6 +100,34 @@ jobs:
       - name: Apply RabbitMQ Service to DigitalOcean Kubernetes
         run: kubectl apply -f $GITHUB_WORKSPACE/scraper/k8s/rabbitmq-service.yaml
 
+        ### Storage service build and deploy
+      - name: Pull latest Storage service image
+        run: docker pull registry.digitalocean.com/rso-registry/storage:latest
+
+      - name: Build Storage service image
+        run: docker build -t registry.digitalocean.com/rso-registry/storage:$(echo $GITHUB_SHA | head -c7) storage
+
+      - name: Tag Storage service image as latest
+        run: docker image tag registry.digitalocean.com/rso-registry/storage:$(echo $GITHUB_SHA | head -c7) registry.digitalocean.com/rso-registry/storage:latest
+
+      - name: Push Storage service images to DigitalOcean Container Registry
+        run: docker push registry.digitalocean.com/rso-registry/storage --all-tags
+
+      - name: Update Storage deployment file
+        run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|registry.digitalocean.com/rso-registry/storage|registry.digitalocean.com/rso-registry/storage:'${TAG}'|' $GITHUB_WORKSPACE/storage/k8s/storage-deployment.yaml
+
+      - name: Apply Storage Deployment to DigitalOcean Kubernetes
+        run: kubectl apply -f $GITHUB_WORKSPACE/storage/k8s/storage-deployment.yaml
+
+      - name: Apply Storage Mongo Deployment to DigitalOcean Kubernetes
+        run: kubectl apply -f $GITHUB_WORKSPACE/storage/k8s/storage-mongodb-deployment.yaml
+
+      - name: Apply Storage Mongo Service to DigitalOcean Kubernetes
+        run: kubectl apply -f $GITHUB_WORKSPACE/storage/k8s/storage-mongodb-service.yaml
+
+      - name: Apply Storage Service to DigitalOcean Kubernetes
+        run: kubectl apply -f $GITHUB_WORKSPACE/storage/k8s/storage-service.yaml
+
         ### Common deployment steps
       - name: Apply Issuer to DigitalOcean Kubernetes
         run: kubectl apply -f $GITHUB_WORKSPACE/k8s/production_issuer.yaml
