@@ -18,7 +18,7 @@ const notificationRegisterSchema = new Schema({
 
 const NotificationRegister = mongoose.model('NotificationRegister', notificationRegisterSchema)
 
-const mongoDB = 'mongodb://mongo:27017/notification'
+const mongoDB = 'mongodb://notification-mongo:27017/notification'
 
 const port = 3001
 const app = express()

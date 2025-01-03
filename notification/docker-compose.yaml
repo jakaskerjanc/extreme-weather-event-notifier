@@ -9,10 +9,10 @@ services:
       - notification-network
       - rabbitmq-network
     depends_on:
-      - mongo
-  mongo:
-    container_name: mongodb
-    hostname: mongodb
+      - notification-mongo
+  notification-mongo:
+    container_name: notification-mongo
+    hostname: notification-mongo
     image: mongo:8.0.4-rc0-noble
     volumes:
       - ./conduit:/data/db/
@@ -22,6 +22,6 @@ services:
       - notification-network
 networks:
   notification-network:
-    driver: bridge
+    external: true
   rabbitmq-network:
     external: true

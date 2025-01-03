@@ -10,10 +10,10 @@ services:
     volumes:
       - ./src:/app/src
     networks:
-      - mongo-network
+      - notification-network
     depends_on:
-      - mongo
-  mongo:
+      - notification-mongo
+  notification-mongo:
     container_name: mongodb
     hostname: mongodb
     image: mongo:8.0.4-rc0-noble
@@ -22,7 +22,7 @@ services:
     ports:
       - '27017:27017'
     networks:
-      - mongo-network
+      - notification-network
 networks:
-  mongo-network:
+  notification-network:
     driver: bridge
