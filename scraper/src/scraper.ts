@@ -1,12 +1,12 @@
 import { CAP_1_2 } from '@dec112/cap-ts'
 
 export type ArsoSevereEvent = {
-  time: string
-  event: string
+  datetime: string
+  title: string
   severity: number
-  headline: string
   description: string
   instruction: string
+  region: string
   source: string
 }
 
@@ -39,12 +39,13 @@ async function getSevereEvents(): Promise<ArsoSevereEvent[]> {
   const alerts = data.filter((alert) => alert !== undefined)
   const severeEvents = alerts.flatMap((a) => a.info_list).filter((i) => i.severity >= 2 && i.language == 'en-GB')
   return severeEvents.map((e) => ({
-    time: e.effective || '',
-    event: e.event,
+    datetime: e.effective || '',
+    title: e.event || '',
     severity: e.severity,
     headline: e.headline || '',
     description: e.description || '',
     instruction: e.instruction || '',
+    region: e.area_list[0].areaDesc || '',
     source: 'ARSO'
   }))
 }
@@ -60,5 +61,7 @@ export function runArsoScrapper(callback: (events: ArsoSevereEvent[]) => void) {
 
   scrapeFunction()
 
-  setInterval(scrapeFunction, 1 * 60 * 1000) // 1 minute in milliseconds
+  const minuteDelay = 5
+
+  setInterval(scrapeFunction, minuteDelay * 60 * 1000)
 }
