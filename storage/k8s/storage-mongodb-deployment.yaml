@@ -34,6 +34,10 @@ spec:
               protocol: TCP
           volumeMounts:
             - mountPath: /data/db
-              name: storage-mongodb-cm0
+              name: storage-mongodb-claim0
       hostname: storage-mongodb
       restartPolicy: Always
+      volumes:
+        - name: storage-mongodb-claim0
+          persistentVolumeClaim:
+            claimName: storage-mongodb-claim0
