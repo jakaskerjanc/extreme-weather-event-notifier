@@ -1,24 +1,34 @@
 <template>
   <div>
-    <div v-if="isLoading">
-      Loading...
+    <div class="status">
+      <div v-if="isLoading">
+        Loading...
+      </div>
+      <div v-else-if="error">
+        Error: Notification permission not granted - alerts will not work
+      </div>
+      <v-card v-else-if="registerStatus">
+        <v-card-title> Notification Status </v-card-title>
+        <v-card-text>
+          <p> Client ID: {{ registerStatus.clientId }} </p>
+          <p> Notifications enabled: {{ registerStatus.registered }} </p>
+        </v-card-text>
+      </v-card>
     </div>
-    <div v-if="registerStatus">
-      <p>Client ID: {{ registerStatus.clientId }}</p>
-      <p>Registered: {{ registerStatus.isRegistered }}</p>
+    <div class="button-wrapper">
+      <v-btn
+        :disabled="isRegButtonDisabled"
+        @click="registerNotification(true)"
+      >
+        Enable Notifications
+      </v-btn>
+      <v-btn
+        :disabled="isUnregButtonDisabled"
+        @click="registerNotification(false)"
+      >
+        Disable Notifications
+      </v-btn>
     </div>
-    <button
-      :disabled="isRegButtonDisabled"
-      @click="registerNotification(true)"
-    >
-      Register Notification
-    </button>
-    <button
-      :disabled="isUnregButtonDisabled"
-      @click="registerNotification(false)"
-    >
-      Unregister Notification
-    </button>
   </div>
 </template>
 
@@ -28,6 +38,7 @@ import { initFirebase, initMessagingAndRequestNotificationPermission } from '~/s
 const clientId = ref<string | null>(null)
 const registerStatus = ref<{ clientId: string, isRegistered: boolean } | null>(null)
 const isLoading = ref(true)
+const error = ref<boolean>(false)
 
 const isRegButtonDisabled = computed(() => {
   return isLoading.value || (!!registerStatus.value && registerStatus.value.isRegistered)
@@ -40,7 +51,14 @@ const isUnregButtonDisabled = computed(() => {
 initFirebase()
 
 onMounted(async () => {
-  clientId.value = await initMessagingAndRequestNotificationPermission()
+  try {
+    clientId.value = await initMessagingAndRequestNotificationPermission()
+  }
+  catch (e) {
+    console.error(e)
+    error.value = true
+  }
+
   if (clientId.value) {
     await getRegisterStatus()
   }
@@ -67,3 +85,18 @@ async function getRegisterStatus() {
   registerStatus.value = await $fetch(`/api/status/${clientId.value}`)
 }
 </script>
+
+<style scoper>
+.button-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  gap: 20px;
+}
+
+.status {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+</style>

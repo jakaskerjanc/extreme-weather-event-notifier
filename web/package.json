@@ -16,8 +16,10 @@
     "eslint": "^9.16.0",
     "firebase": "^11.1.0",
     "nuxt": "^3.14.1592",
+    "nuxt-graphql-client": "^0.2.43",
     "vue": "latest",
-    "vue-router": "latest"
+    "vue-router": "latest",
+    "vuetify-nuxt-module": "^0.18.3"
   },
   "devDependencies": {
     "typescript": "^5.7.2"

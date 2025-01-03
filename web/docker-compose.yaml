@@ -1,0 +1,15 @@
+services:
+  web:
+    container_name: web
+    restart: always
+    build: .
+    ports:
+      - "3000:3000"
+    networks:
+      - notification-network
+      - storage-network
+networks:
+  notification-network:
+    external: true
+  storage-network:
+    external: true

@@ -1,0 +1,13 @@
+query WeatherEvents {
+  weatherEvents {
+    id
+    datetime
+    title
+    severity
+    description
+    instruction
+    region
+    source
+    type
+  }
+}

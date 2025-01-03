@@ -1,11 +1,26 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ['@nuxt/eslint'],
-  devtools: { enabled: true },
-  compatibilityDate: '2024-11-01',
-  eslint: {
+  'compatibilityDate': '2024-11-01',
+  'devtools': { enabled: true },
+  'eslint': {
     config: {
       stylistic: true,
+    },
+  },
+  'graphql-client': {
+    codegen: false,
+  },
+  'modules': ['@nuxt/eslint', 'nuxt-graphql-client', 'vuetify-nuxt-module'],
+  'runtimeConfig': {
+    public: {
+      GQL_HOST: 'http://storage:4000/graphql', // overwritten by process.env.GQL_HOST
+    },
+  },
+  'vuetify': {
+    moduleOptions: {
+      /* module specific options */
+    },
+    vuetifyOptions: {
+      /* vuetify options */
     },
   },
 })

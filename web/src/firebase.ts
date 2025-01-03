@@ -20,18 +20,12 @@ export async function initMessagingAndRequestNotificationPermission() {
   const serviceWorkerRegistration = await navigator.serviceWorker.register(`firebase-messaging-sw.js`)
 
   const messaging = getMessaging(firebaseApp)
-  try {
-    // Vapid is a public key, it's not a secret
-    const token = await getToken(messaging, { vapidKey: 'BB7KnU6hhvhCtdWkG5MStRdgq3qztg3K6OBQIWkyh5lvS3rEzz0M--nmn8QLQizCLIWBuh-N5pGlEpod0bl8TMw', serviceWorkerRegistration })
-    console.log(token)
+  // Vapid is a public key, it's not a secret
+  const token = await getToken(messaging, { vapidKey: 'BB7KnU6hhvhCtdWkG5MStRdgq3qztg3K6OBQIWkyh5lvS3rEzz0M--nmn8QLQizCLIWBuh-N5pGlEpod0bl8TMw', serviceWorkerRegistration })
+  console.log(token)
 
-    onMessage(messaging, (payload) => {
-      console.log('Message received: ', payload)
-    })
-    return token
-  }
-  catch (e) {
-    console.error(e)
-    return null
-  }
+  onMessage(messaging, (payload) => {
+    console.log('Message received: ', payload)
+  })
+  return token
 }
