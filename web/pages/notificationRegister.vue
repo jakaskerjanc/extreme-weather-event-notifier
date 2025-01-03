@@ -11,7 +11,7 @@
         <v-card-title> Notification Status </v-card-title>
         <v-card-text>
           <p> Client ID: {{ registerStatus.clientId }} </p>
-          <p> Notifications enabled: {{ registerStatus.registered }} </p>
+          <p> Notifications: {{ registerStatus.isRegistered }} </p>
         </v-card-text>
       </v-card>
     </div>
