@@ -38,6 +38,6 @@ RUN --mount=type=secret,id=FIREBASE_PRIVATE_KEY_ID \
     echo 'FIREBASE_CLIENT_ID=$(cat /run/secrets/FIREBASE_CLIENT_ID)' >> .env && \
     echo 'FIREBASE_CLIENT_X509_CERT_URL=$(cat /run/secrets/FIREBASE_CLIENT_X509_CERT_URL)' >> .env \
     "
-RUN cat /run/secrets/FIREBASE_PRIVATE_KEY_ID
+RUN --mount=type=secret,id=FIREBASE_PRIVATE_KEY_ID cat /run/secrets/FIREBASE_PRIVATE_KEY_ID
 
 CMD ["node", "dist/index.js"]
