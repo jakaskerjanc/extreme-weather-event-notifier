@@ -8,14 +8,15 @@ services:
     ports:
       - '3001:3001'
     volumes:
-      - ./src:/app/src
+      - ./:/app/
     networks:
       - notification-network
+      - rabbitmq-network
     depends_on:
       - notification-mongo
   notification-mongo:
-    container_name: mongodb
-    hostname: mongodb
+    container_name: notification-mongo
+    hostname: notification-mongo
     image: mongo:8.0.4-rc0-noble
     volumes:
       - ./conduit:/data/db/
@@ -25,4 +26,6 @@ services:
       - notification-network
 networks:
   notification-network:
-    driver: bridge
+    external: true
+  rabbitmq-network:
+    external: true

@@ -3,6 +3,18 @@ import bodyParser from 'body-parser'
 import mongoose from 'mongoose'
 import amqp from 'amqplib'
 
+import { initFirebase, sendNotification } from './firebase.js'
+
+type ArsoSevereEvent = {
+  datetime: string
+  title: string
+  severity: number
+  description: string
+  instruction: string
+  region: string
+  source: string
+}
+
 // Set `strictQuery: false` to globally opt into filtering by properties that aren't in the schema
 // Included because it removes preparatory warnings for Mongoose 7.
 // See: https://mongoosejs.com/docs/migrating_to_6.html#strictquery-is-removed-and-replaced-by-strict
@@ -11,9 +23,9 @@ mongoose.set('strictQuery', false)
 const Schema = mongoose.Schema
 
 const notificationRegisterSchema = new Schema({
-  clientId: String,
-  isRegistered: Boolean,
-  createDate: Date
+  clientId: { type: String, required: true },
+  isRegistered: { type: Boolean, required: true },
+  createDate: { type: Date, required: true }
 })
 
 const NotificationRegister = mongoose.model('NotificationRegister', notificationRegisterSchema)
@@ -68,12 +80,31 @@ app.get('/api/status/:clientId', async (req, res) => {
   res.status(200).json({ clientId: result.clientId, isRegistered: result.isRegistered, createDate: result.createDate })
 })
 
+app.get('/test/triggerNotifcations', async (_req, res) => {
+  const registeredClients = await NotificationRegister.find({ isRegistered: true }).exec()
+
+  const weatherEventsNotifications = [{ title: 'Test notification 1', body: 'This is a test notification 1' }]
+
+  registeredClients.forEach((client) => {
+    weatherEventsNotifications.forEach((notification) => {
+      sendNotification(notification, client.clientId)
+    })
+  })
+
+  res.status(200).send('Notifications sent')
+})
+
 app.listen(port, () => {
   console.log(`Server is listening at port ${port}`)
 })
 
 main().catch((err) => console.log(err))
+
 async function main() {
+  console.log('Initializing Firebase...')
+  initFirebase()
+  console.log('Firebase initialized!')
+
   console.log('Connecting to MongoDB...')
   await mongoose.connect(mongoDB)
   console.log('Connected to MongoDB!')
@@ -130,12 +161,25 @@ const receiveMessages = async (
   }
 }
 
-function onMessage(msg: amqp.ConsumeMessage | null) {
+async function onMessage(msg: amqp.ConsumeMessage | null) {
   if (msg === null) {
     console.error('Received null message')
     return
   }
 
-  const content = msg.content.toString()
-  console.log(`${new Date()} - Received message: ${content}`)
+  try {
+    const weatherEvents = JSON.parse(msg.content.toString()) as ArsoSevereEvent[]
+    console.log(`${new Date()} - Received ${weatherEvents.length} new events `)
+
+    const weatherEventsNotifications = weatherEvents.map((event) => ({ title: event.title, body: event.description }))
+    const registeredClients = await NotificationRegister.find({ isRegistered: true }).exec()
+
+    registeredClients.forEach((client) => {
+      weatherEventsNotifications.forEach((notification) => {
+        sendNotification(notification, client.clientId)
+      })
+    })
+  } catch (error) {
+    console.error('Error parsing message:', error)
+  }
 }
