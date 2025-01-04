@@ -18,6 +18,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: extreme-weather-event-notifier-cluster-ip
+            name: web-cluster-ip
             port: 
               number: 80
