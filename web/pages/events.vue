@@ -8,6 +8,7 @@
         v-for="(event, id) in data"
         :key="id"
         elevated
+        class="card"
       >
         <v-card-title>
           <div class="card-title-wrapper">
@@ -47,10 +48,15 @@ function toFormattedDate(unixtimestamp: string) {
 }
 
 .card-wrapper {
+  margin-top: 20px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 20px;
+}
+
+.card {
+  max-width: 500px;
 }
 
 .card-title {
