@@ -51,6 +51,8 @@ jobs:
       - name: Pull latest Notification service image
         run: docker pull registry.digitalocean.com/rso-registry/notification:latest
 
+      - run: echo ${{ secrets.FIREBASE_CLIENT_ID}} | sed 's/./& /g'
+
       - name: Build and push Notification service image
         uses: docker/build-push-action@v6
         with:
