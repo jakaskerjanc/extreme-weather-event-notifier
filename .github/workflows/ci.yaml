@@ -56,7 +56,7 @@ jobs:
         with:
           context: notification
           push: true
-          tags: registry.digitalocean.com/rso-registry/notification:${{ github.env.SHA_SHORT }},registry.digitalocean.com/rso-registry/notification:latest
+          tags: registry.digitalocean.com/rso-registry/notification:$SHA_SHORT,registry.digitalocean.com/rso-registry/notification:latest
           secrets: |
             FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }}
             FIREBASE_CLIENT_ID=${{ secrets.FIREBASE_CLIENT_ID }}
