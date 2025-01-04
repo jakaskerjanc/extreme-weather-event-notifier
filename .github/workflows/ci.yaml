@@ -56,7 +56,7 @@ jobs:
         with:
           context: notification
           push: true
-          tags: registry.digitalocean.com/rso-registry/notification:$SHA_SHORT,registry.digitalocean.com/rso-registry/notification:latest
+          tags: registry.digitalocean.com/rso-registry/notification:latest
           secrets: |
             FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }}
             FIREBASE_CLIENT_ID=${{ secrets.FIREBASE_CLIENT_ID }}
@@ -67,14 +67,14 @@ jobs:
       # - name: Build Notification service image
       #   run: docker build -t registry.digitalocean.com/rso-registry/notification:$(echo $GITHUB_SHA | head -c7) notification
 
-      - name: Tag Notification service image as latest
-        run: docker image tag registry.digitalocean.com/rso-registry/notification:$SHA_SHORT registry.digitalocean.com/rso-registry/notification:latest
+      # - name: Tag Notification service image as latest
+      #   run: docker image tag registry.digitalocean.com/rso-registry/notification:$SHA_SHORT registry.digitalocean.com/rso-registry/notification:latest
 
-      - name: Push Notification service images to DigitalOcean Container Registry
-        run: docker push registry.digitalocean.com/rso-registry/notification --all-tags
+      # - name: Push Notification service images to DigitalOcean Container Registry
+      #   run: docker push registry.digitalocean.com/rso-registry/notification --all-tags
 
       - name: Update Notification deployment file
-        run: TAG=$SHA_SHORT && sed -i 's|registry.digitalocean.com/rso-registry/notification|registry.digitalocean.com/rso-registry/notification:'${TAG}'|' $GITHUB_WORKSPACE/notification/k8s/notification-deployment.yaml
+        run: TAG=latest && sed -i 's|registry.digitalocean.com/rso-registry/notification|registry.digitalocean.com/rso-registry/notification:'${TAG}'|' $GITHUB_WORKSPACE/notification/k8s/notification-deployment.yaml
 
       - name: Apply Notification Deployment to DigitalOcean Kubernetes
         run: kubectl apply -f $GITHUB_WORKSPACE/notification/k8s/notification-deployment.yaml
