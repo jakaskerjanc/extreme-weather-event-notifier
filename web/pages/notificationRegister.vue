@@ -2,6 +2,10 @@
   <div>
     <div class="status">
       <div v-if="isLoading">
+        <v-progress-circular
+          color="primary"
+          indeterminate
+        />
         Loading...
       </div>
       <div v-else-if="error">

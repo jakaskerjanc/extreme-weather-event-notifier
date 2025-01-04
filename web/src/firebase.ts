@@ -1,6 +1,7 @@
 import type { FirebaseApp } from 'firebase/app'
 import { initializeApp } from 'firebase/app'
 import { getMessaging, getToken, onMessage } from 'firebase/messaging'
+import useStore from '~/src/store'
 
 let firebaseApp: FirebaseApp
 
@@ -24,8 +25,16 @@ export async function initMessagingAndRequestNotificationPermission() {
   const token = await getToken(messaging, { vapidKey: 'BB7KnU6hhvhCtdWkG5MStRdgq3qztg3K6OBQIWkyh5lvS3rEzz0M--nmn8QLQizCLIWBuh-N5pGlEpod0bl8TMw', serviceWorkerRegistration })
   console.log(token)
 
+  const store = useStore()
+
   onMessage(messaging, (payload) => {
     console.log('Message received: ', payload)
+
+    if (payload.notification?.title && payload.notification?.body) {
+      store.title.value = payload.notification.title
+      store.message.value = payload.notification.body
+      store.openDialog()
+    }
   })
   return token
 }
