@@ -1,8 +1,5 @@
 # TODO
 
-### Repo
-- [ ] Include README with project information
-
 ### Documentation
 - [ ] Include information about best practices
 - [ ] Use markdown for documentation and organize it in a structured way
