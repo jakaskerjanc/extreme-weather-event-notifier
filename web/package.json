@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@nuxt/eslint": "^0.7.2",
+    "@scalar/nuxt": "^0.2.150",
     "eslint": "^9.16.0",
     "firebase": "^11.1.0",
     "nuxt": "^3.14.1592",
@@ -22,6 +23,7 @@
     "vuetify-nuxt-module": "^0.18.3"
   },
   "devDependencies": {
+    "@scalar/api-reference": "^1.25.50",
     "typescript": "^5.7.2"
   }
 }

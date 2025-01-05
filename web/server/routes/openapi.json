@@ -1,0 +1,160 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Extreme Weather Event Notifier API Documentation",
+        "description": "Server specification describing endpoints for registering clients, checking statuses, and retrieving weather event data."
+    },
+    "servers": [
+        {
+            "url": "https://rso-weather.duckdns.org",
+            "description": "Public deployment",
+            "variables": {}
+        },
+        {
+            "url": "http://localhost:3000",
+            "description": "Local Development Server",
+            "variables": {}
+        }
+    ],
+    "paths": {
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "API Routes"
+                ],
+                "summary": "Register a client",
+                "description": "Registers or updates a client to receive weather updates.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "clientId": {
+                                        "type": "string"
+                                    },
+                                    "isRegistered": {
+                                        "type": "boolean"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Created client-123 with notifications true"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Invalid input"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/status/{clientId}": {
+            "get": {
+                "tags": [
+                    "API Routes"
+                ],
+                "summary": "Retrieve client status",
+                "description": "Gets status information for a specific client ID.",
+                "parameters": [
+                    {
+                        "name": "clientId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "clientId": "client-123",
+                                    "isRegistered": true
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Client not found",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "clientId is required"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/weatherEvents": {
+            "get": {
+                "tags": [
+                    "API Routes"
+                ],
+                "summary": "List weather events",
+                "description": "Retrieves a list of recorded weather events.",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "example": [
+                                    {
+                                        "datetime": "1736075801",
+                                        "title": "Severe Wind Warning",
+                                        "severity": 3,
+                                        "description": "Wind speeds of 100kph or greater.",
+                                        "instruction": "Seek shelter immediately.",
+                                        "region": "Slovenia, South East",
+                                        "source": "ARSO"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/healthz": {
+            "get": {
+                "summary": "Health check endpoint",
+                "description": "Returns a 200 OK response if the server is running.",
+                "tags": [
+                    "App Routes"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Not ready"
+                    }
+                }
+            }
+        }
+    }
+}

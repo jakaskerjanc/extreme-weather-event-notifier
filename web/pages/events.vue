@@ -29,6 +29,10 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  layout: 'main',
+})
+
 const { data } = await useAsyncData(
   'weatherEvents',
   () => $fetch('/api/weatherEvents'),

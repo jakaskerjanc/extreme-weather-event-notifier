@@ -39,6 +39,10 @@
 <script setup lang="ts">
 import { initFirebase, initMessagingAndRequestNotificationPermission } from '~/src/firebase'
 
+definePageMeta({
+  layout: 'main',
+})
+
 const clientId = ref<string | null>(null)
 const registerStatus = ref<{ clientId: string, isRegistered: boolean } | null>(null)
 const isLoading = ref(true)

@@ -1,6 +1,6 @@
 export default defineNuxtConfig({
   'compatibilityDate': '2024-11-01',
-  'devtools': { enabled: true },
+  'devtools': { enabled: false },
   'eslint': {
     config: {
       stylistic: true,
@@ -9,18 +9,20 @@ export default defineNuxtConfig({
   'graphql-client': {
     codegen: false,
   },
-  'modules': ['@nuxt/eslint', 'nuxt-graphql-client', 'vuetify-nuxt-module'],
+  'modules': ['@nuxt/eslint', 'nuxt-graphql-client', 'vuetify-nuxt-module', '@scalar/nuxt'],
+  'nitro': {
+    experimental: {
+      openAPI: true,
+    },
+  },
   'runtimeConfig': {
     public: {
       GQL_HOST: 'http://storage:4000/graphql', // overwritten by process.env.GQL_HOST
     },
   },
-  'vuetify': {
-    moduleOptions: {
-      /* module specific options */
-    },
-    vuetifyOptions: {
-      /* vuetify options */
+  'scalar': {
+    spec: {
+      url: '/openapi',
     },
   },
 })

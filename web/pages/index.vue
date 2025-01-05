@@ -20,8 +20,20 @@
         Register for weather notifications
       </v-btn>
     </div>
+    <v-btn
+      class="docs-button"
+      to="/docs"
+    >
+      Open API Docs
+    </v-btn>
   </div>
 </template>
+
+<script setup lang="ts">
+definePageMeta({
+  layout: 'main',
+})
+</script>
 
 <style scoped>
 .title {
@@ -47,5 +59,12 @@
   justify-content: center;
   margin-top: 20px;
   gap: 20px;
+}
+
+.docs-button {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 </style>
