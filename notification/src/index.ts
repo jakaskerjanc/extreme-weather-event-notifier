@@ -80,7 +80,7 @@ app.get('/api/status/:clientId', async (req, res) => {
   res.status(200).json({ clientId: result.clientId, isRegistered: result.isRegistered, createDate: result.createDate })
 })
 
-app.get('/test/triggerNotifcations', async (_req, res) => {
+app.get('/test/triggerNotifications', async (_req, res) => {
   const registeredClients = await NotificationRegister.find({ isRegistered: true }).exec()
 
   const weatherEventsNotifications = [{ title: 'Test notification 1', body: 'This is a test notification 1' }]
