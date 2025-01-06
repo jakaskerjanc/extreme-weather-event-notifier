@@ -65,7 +65,7 @@ const schema = buildSchema(`
 
 const root = {
   weatherEvents() {
-    return weatherEvent.find()
+    return weatherEvent.find().sort({ datetime: -1 }).limit(50)
   },
   //@ts-expect-error - any type
   weatherEvent({ id }) {
