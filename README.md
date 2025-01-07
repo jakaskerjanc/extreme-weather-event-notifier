@@ -8,7 +8,7 @@ This service was built for the Cloud Computing class at the Faculty of Computer 
 
 The service is a web application, built on microservice principles, that notifies users about extreme weather events. It allows users to subscribe to notifications about such events in Slovenia. The weather event information is provided by the Slovenian Environment Agency. The service notifies users via push notifications, stores all previous weather events, and allows users to view them.
 
-The website is available at [http://extreme-weather-event-notifier.com](http://extreme-weather-event-notifier.com).
+The website is available at [https://rso-weather.duckdns.org/](https://rso-weather.duckdns.org/).
 
 # Technical Information
 
