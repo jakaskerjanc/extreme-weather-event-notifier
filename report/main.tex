@@ -29,7 +29,7 @@ Extreme Weather Event Notifier je spletna aplikacija, ki uporabnike obve\v{s}\v{
 
 \section*{Ogrodje in razvojno okolje}
 Pri razvoju projekta so bili uporabljeni sodobni jeziki in orodja, ki omogo\v{c}ajo skalabilno in vzdr\v{z}evalno infrastrukturo:
-Frontend je implementiran s pomo\v{c}jo Vue.js, za backend pa se uporablja Express.js. Podatki se shranjujejo v MongoDB, medtem ko RabbitMQ slu\v{z}i za medstoritveno komunikacijo. Infrastruktura temelji na Dockerju in Kubernetesu, CI/CD procesi pa so avtomatizirani s pomo\v{c}jo GitHub Actions.
+Frontend je implementiran s pomo\v{c}jo Nuxt.js, za backend pa se uporablja Express.js. Podatki se shranjujejo v MongoDB, medtem ko RabbitMQ slu\v{z}i za medstoritveno komunikacijo. Infrastruktura temelji na Dockerju in Kubernetesu, CI/CD procesi pa so avtomatizirani s pomo\v{c}jo GitHub Actions.
 \newpage
 \section*{Arhitektura sistema}
 Arhitektura aplikacije temelji na mikrostoritvenem modelu, kjer vsaka storitev izpolnjuje dolo\v{c}eno funkcijo:
@@ -39,11 +39,11 @@ Arhitektura aplikacije temelji na mikrostoritvenem modelu, kjer vsaka storitev i
 	\caption{Shema arhitekture aplikacije}
 \end{figure}
 
-Aplikacija sestavljajo \v{s}tiri glavne mikrostoritve: Web (frontend), Notification, Scraper in Storage. Komunikacija med storitvami poteka preko RabbitMQ in API-jev (REST in GraphQL). Push obvestila se po\v{s}iljajo preko Firebase Cloud Messaging.
+Aplikacija sestavljajo \v{s}tiri glavne mikrostoritve: Web, Notification, Scraper in Storage. Komunikacija med storitvami poteka preko RabbitMQ in API-jev (REST in GraphQL). Push obvestila se po\v{s}iljajo preko Firebase Cloud Messaging.
 
 \section*{Opis mikrostoritev}
-\subsection*{Web Mikrostoritev (Frontend)}
-Web mikrostoritev predstavlja uporabni\v{s}ki vmesnik aplikacije, implementiran v Vue.js. Uporabnikom omogo\v{c}a:
+\subsection*{Web Mikrostoritev}
+Web mikrostoritev predstavlja uporabni\v{s}ki vmesnik aplikacije, implementiran v Nuxt.js. Uporabnikom omogo\v{c}a:
 
 - Pregled zgodovine vremenskih dogodkov, ki se pridobijo iz Storage mikrostoritve preko GraphQL.
 
@@ -59,17 +59,6 @@ Scraper mikrostoritev periodi\v{c}no zbira podatke o vremenskih dogodkih iz ARSO
 
 \subsection*{Storage Mikrostoritev}
 Storage mikrostoritev shranjuje podatke o vremenskih dogodkih v MongoDB in izpostavlja GraphQL API, ki omogo\v{c}a pridobivanje podatkov za prikaz zgodovine dogodkov v Web mikrostoritvi.
-
-\section*{CI/CD in testiranje}
-CI/CD proces je implementiran s pomo\v{c}jo GitHub Actions. Vklju\v{c}uje:
-
-- Za\v{s}\v{c}ito glavne veje "main", kjer so spremembe mo\v{z}ne le preko pull requestov.
-
-- Avtomatizirano gradnjo in testiranje Docker slik.
-
-- Name\v{s}\v{c}anje posodobljenih slik v Kubernetes preko DigitalOcean Container Registry.
-
-Testiranje je razdeljeno na unit teste za posamezne storitve, integracijske teste za preverjanje komunikacije med storitvami in ro\v{c}no testiranje uporabni\v{s}kega vmesnika.
 
 \section*{Primeri uporabe}
 Aplikacija omogo\v{c}a uporabniku enostavno interakcijo:
@@ -94,9 +83,9 @@ Uporabnik obi\v{s}\v{c}e spletno mesto, omogo\v{c}i potisna obvestila, in prejme
 	              
 	\item \textbf{Mikrostoritve in »cloud-native« aplikacija}
 	      \begin{itemize}
-	      	\item Osnova struktura projekta in razvojnega okolja je vidna v repozitoriju.
+	      	\item Vsaka mikrostoritev je v svojem direktoriju.
 	      	\item Vsaka mikrostoritev ima implementirana navodila za namestitev in zagon.
-	      	\item Storitve komuniciraje prek HTTP in RabbitMQ sporočilnega protokola.
+	      	\item Storitve komunicirajo prek HTTP in RabbitMQ sporočilnega protokola.
 	      	\item Vsaka storitev ima svoje Kubernetes manifeste.
 	      	\item Uporabljena je MongoDB NoSQL podatkovna baza, z nekaj podatkih o vremenskih dogodkih.
 	      \end{itemize}
@@ -150,7 +139,7 @@ Uporabnik obi\v{s}\v{c}e spletno mesto, omogo\v{c}i potisna obvestila, in prejme
 	      \begin{itemize}
 	      	\item Dodan je zunanji API, ki omogoča pridobivanje podatkov o vremenskih dogodkih.
 	      	\item ARSO API je javno dostopen zato autentikacija ni potrebna.
-	      	\item Uporabljano je Firebase Cloud Messaging za po\v{s}iljanje potisnih obvestil.
+	      	\item Uporablja se Firebase Cloud Messaging za pošiljanje potisnih obvestil.
 	      	\item Privatni ključi niso shranjeni v repozitoriju ampak se prenesejo v Docker sliko ob gradnji.
 	      \end{itemize}
 	      
