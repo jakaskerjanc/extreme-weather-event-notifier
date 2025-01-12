@@ -15,6 +15,7 @@ The website is available at [https://rso-weather.duckdns.org/](https://rso-weath
 ### Repository Structure
 
 Each service has its own folder in the repository. The services are:
+
 - `web` - Frontend service
 - `notification` - Notification service
 - `scraper` - Scraper service
@@ -67,6 +68,7 @@ The web service has three pages: index, notifications, and events. We utilize Nu
 There is also an API documentation at `/docs`, built with [Scalar](https://scalar.com/) and the OpenAPI standard.
 
 The backend exposes three endpoints, fetched from the frontend side. The endpoints just proxy to other microservices, as they are not accessible from outside the Kubernetes network:
+
 - `/api/weatherEvents`: uses GraphQL to fetch weather events from the Storage microservice at `http://storage:4000/graphql`. The GraphQL schema is stored in `src/queries/weatherEvents.gql`.
 - `/api/register`: sends a POST request to `http://notification:3001/api/register` with the client ID and a boolean value indicating whether the user is enabling or disabling notifications.
 - `/api/status/[clientId]`: forwards a request to `http://notification:3001/api/status/${clientId}`, using the path parameter `clientId` to determine if the client has enabled notifications.
@@ -85,6 +87,7 @@ The service uses MongoDB as a database, RabbitMQ for communication with the scra
 We use the `mongoose` library to interface with MongoDB. It is a schema-based solution to model application data easily.
 
 This service exposes four endpoints:
+
 - `/api/weatherEvents`, `/api/register`, `/healthz`, and `/test/triggerNotifications`. The first three are explained in the Web Microservice details. The `triggerNotifications` endpoint is used to send a test notification to all clients who have notifications enabled, for testing and demonstration purposes.
 
 To receive new weather events, the service connects to the Scraper's RabbitMQ server at `amqp://rabbitmq`. It listens for new messages on the `new_weather_events` queue. Upon receiving a message, it uses `getMessaging().send(message)` from the `firebase-admin` library to send notifications. The `message` must include the client ID.
